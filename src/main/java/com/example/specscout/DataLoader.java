@@ -2,6 +2,7 @@ package com.example.specscout;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.CommandLineRunner;
@@ -31,17 +32,18 @@ public class DataLoader implements CommandLineRunner {
         }
 
         List<Phone> phones = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(resource.getInputStream(), Charset.forName("windows-1252")))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.isBlank()) continue;
                 String[] parts = line.split("\t", -1);
                 if (parts.length < 5) continue;
                 Phone p = new Phone();
-                p.setName(parts[0]);
-                p.setBrand(parts[1]);
-                p.setRam(parts[2]);
-                p.setBattery(parts[3]);
+                p.setName(clean(parts[0]));
+                p.setBrand(clean(parts[1]));
+                p.setRam(clean(parts[2]));
+                p.setBattery(clean(parts[3]));
                 p.setImage(parts[4]);
                 p.setFavorite(false);
                 phones.add(p);
@@ -50,5 +52,14 @@ public class DataLoader implements CommandLineRunner {
 
         phoneRepository.saveAll(phones);
         System.out.println("🌱 Seeded " + phones.size() + " phones from phones.tsv");
+    }
+
+    // Turn non-breaking spaces and other odd whitespace into normal spaces
+    private String clean(String s) {
+        if (s == null) return null;
+        return s.replace('\u00A0', ' ')
+                .replaceAll("[\\u2007\\u202F\\uFFFD]", " ")
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 }
