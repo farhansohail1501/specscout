@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpecScout — Find your perfect phone</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{ --bg:#faf8f5; --card:#ffffff; --ink:#2b2622; --muted:#8a8178; --line:#ece7e0; --gold:#b78a3d; --soft:#f4efe8; }
+        *{box-sizing:border-box;}
+        body{font-family:'Inter',Arial,sans-serif; background:var(--bg); margin:0; color:var(--ink);}
+        a{text-decoration:none; color:inherit;}
+        .navbar{display:flex; align-items:center; gap:24px; background:rgba(255,255,255,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:16px 32px; position:sticky; top:0; z-index:20;}
+        .brand{font-family:'Playfair Display',serif; font-size:24px; font-weight:700; display:flex; align-items:center; gap:9px; color:var(--ink);}
+        .brand .dot{width:9px; height:9px; border-radius:50%; background:var(--gold); display:inline-block;}
+        .nav-links{display:flex; align-items:center; gap:22px; font-size:14px;}
+        .nav-links a{color:var(--muted);} .nav-links a:hover{color:var(--ink);}
+        .badge{background:var(--gold); color:#fff; font-size:11px; font-weight:600; border-radius:20px; padding:1px 7px; margin-left:5px;}
+        .nav-search{margin-left:auto; display:flex; gap:8px;}
+        .nav-search input{background:#fff; border:1px solid var(--line); color:var(--ink); padding:9px 14px; border-radius:10px; font-size:14px; width:230px; outline:none;}
+        .nav-search input::placeholder{color:#b3aca3;}
+        .nav-search input:focus{border-color:var(--gold);}
+        .nav-search button{background:var(--ink); color:#fff; border:none; padding:9px 18px; border-radius:10px; font-weight:500; cursor:pointer;}
+        .wrap{max-width:1160px; margin:0 auto; padding:52px 32px 20px;}
+        .hero h1{font-family:'Playfair Display',serif; font-size:42px; font-weight:700; margin:0 0 10px; letter-spacing:-.5px;}
+        .hero p{color:var(--muted); margin:0 0 10px; font-size:15px;}
+        .count{color:var(--muted); font-size:13px;}
+        .chips{margin-top:20px; display:flex; flex-wrap:wrap; gap:10px;}
+        .chip{padding:8px 18px; border:1px solid var(--line); border-radius:24px; background:#fff; font-size:13px; color:var(--muted); cursor:pointer; transition:all .15s ease;}
+        .chip:hover{border-color:var(--gold); color:var(--ink);}
+        .chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+        #compareBar{position:sticky; top:73px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 20px; margin:22px 0 0; display:none; align-items:center; gap:14px; z-index:10; box-shadow:0 8px 26px rgba(120,100,60,.08);}
+        #compareBar button{border-radius:10px; padding:8px 16px; cursor:pointer; font-size:14px; font-weight:500;}
+        .btn-primary{background:var(--ink); color:#fff; border:none;}
+        .btn-ghost{background:#fff; border:1px solid var(--line);}
+        .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:26px; margin-top:30px;}
+        .card{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:24px; display:block; position:relative; transition:transform .18s ease, box-shadow .18s ease;}
+        .card:hover{transform:translateY(-6px); box-shadow:0 18px 40px rgba(120,100,60,.12);}
+        .card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;}
+        .chk{width:20px; height:20px; cursor:pointer; accent-color:var(--gold);}
+        .fav-btn{border:none; background:none; cursor:pointer; font-size:24px; line-height:1;}
+        .phone-img{height:200px; background:linear-gradient(160deg,#fbf9f6,#f4efe8); border:1px solid var(--line); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:6px 0 18px; font-size:46px;}
+        .phone-img img{max-height:180px; max-width:90%;}
+        .name{font-size:20px; font-weight:600; margin:0;}
+        .brand-tag{color:var(--gold); font-size:12px; font-weight:600; letter-spacing:.6px; text-transform:uppercase;}
+        .specs{margin-top:16px; display:flex; flex-wrap:wrap; gap:8px;}
+        .spec{background:var(--soft); color:#5a5249; font-size:12px; padding:6px 12px; border-radius:9px;}
+        .pager{display:flex; align-items:center; justify-content:center; gap:18px; margin-top:48px;}
+        .pager a, .pager span.disabled{padding:11px 22px; border:1px solid var(--line); border-radius:12px; background:#fff; font-size:14px; font-weight:500;}
+        .pager a:hover{border-color:var(--gold); color:var(--gold);}
+        .pager .disabled{color:#cfc9c0; background:#faf8f5;}
+        .pager .status{border:none; background:none; color:var(--muted);}
+        .empty{color:var(--muted); margin-top:24px;}
+        footer{background:#fff; border-top:1px solid var(--line); margin-top:56px; padding:52px 32px 30px;}
+        .foot-wrap{max-width:1160px; margin:0 auto; display:flex; flex-wrap:wrap; gap:40px; justify-content:space-between;}
+        .foot-brand{max-width:320px;}
+        .foot-brand .brand{margin-bottom:12px;}
+        .foot-brand p{font-size:13px; line-height:1.7; color:var(--muted);}
+        .foot-col h4{color:var(--ink); font-size:13px; letter-spacing:.4px; text-transform:uppercase; margin:0 0 14px;}
+        .foot-col a{display:block; color:var(--muted); font-size:13px; margin-bottom:9px;}
+        .foot-col a:hover{color:var(--gold);}
+        .foot-bottom{max-width:1160px; margin:34px auto 0; border-top:1px solid var(--line); padding-top:20px; font-size:12px; color:#a89f95; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="brand"><span class="dot"></span>SpecScout</a>
+        <div class="nav-links">
+            <a href="/">Browse</a>
+            <a href="/favorites">Favorites<span class="badge" th:if="${favCount > 0}" th:text="${favCount}">0</span></a>
+        </div>
+        <form class="nav-search" method="get" action="/">
+            <input type="text" name="q" placeholder="Search phones…" th:value="${q}"/>
+            <button type="submit">Search</button>
+        </form>
+    </nav>
+
+    <div class="wrap">
+        <div class="hero">
+            <h1 th:if="${q == null or q == ''}">Find your perfect phone</h1>
+            <h1 th:if="${q != null and q != ''}">Results for “<span th:text="${q}">x</span>”</h1>
+            <p>Compare specs, save favourites, and choose with confidence.</p>
+            <span class="count" th:text="${total} + ' phones'">0 phones</span>
+            <span class="count" th:if="${q != null and q != ''}"> · <a href="/" style="color:var(--gold);">clear</a></span>
+        </div>
+
+        <div class="chips">
+            <a th:href="@{/(q=${q})}"
+               th:classappend="${brand == null or brand == '' or brand == 'all'} ? 'chip active' : 'chip'">All</a>
+            <a th:each="b : ${brands}"
+               th:href="@{/(q=${q}, brand=${b})}"
+               th:text="${b}"
+               th:classappend="${brand != null and brand.equalsIgnoreCase(b)} ? 'chip active' : 'chip'">Brand</a>
+        </div>
+
+        <div id="compareBar">
+            <span id="compareCount" style="font-size:14px; font-weight:500;">0 selected</span>
+            <button class="btn-primary" onclick="goCompare()">Compare →</button>
+            <button class="btn-ghost" onclick="clearCompare()">Clear</button>
+        </div>
+
+        <div class="grid">
+            <a class="card" th:each="phone : ${phones}" th:href="@{/phone/{id}(id=${phone.id})}">
+                <div class="card-top">
+                    <input type="checkbox" class="chk compare-check" th:value="${phone.id}"
+                           onclick="event.stopPropagation(); toggleCompare(this)"/>
+                    <form th:action="@{/phone/{id}/favorite(id=${phone.id})}" method="post"
+                          onclick="event.stopPropagation();" style="margin:0;">
+                        <input type="hidden" name="returnTo" th:value="@{/(page=${page}, brand=${brand})}"/>
+                        <button type="submit" class="fav-btn"
+                                th:text="${phone.favorite} ? '♥' : '♡'"
+                                th:style="'color:' + (${phone.favorite} ? '#b78a3d' : '#cfc9c0')">♡</button>
+                    </form>
+                </div>
+                <div class="phone-img">
+                    <img th:if="${phone.image != null and phone.image != ''}"
+                         th:src="'data:image/jpeg;base64,' + ${phone.image}"/>
+                    <span th:unless="${phone.image != null and phone.image != ''}">📱</span>
+                </div>
+                <div class="brand-tag" th:text="${phone.brand}">Brand</div>
+                <p class="name" th:text="${phone.name}">Phone name</p>
+                <div class="specs">
+                    <span class="spec" th:if="${phone.ram != null and phone.ram != ''}" th:text="${phone.ram}">RAM</span>
+                    <span class="spec" th:if="${phone.battery != null and phone.battery != ''}" th:text="${phone.battery}">Battery</span>
+                </div>
+            </a>
+        </div>
+
+        <p class="empty" th:if="${phones.isEmpty()}">No phones found. Try another filter.</p>
+
+        <div class="pager" th:if="${totalPages > 1}">
+            <a th:if="${page > 0}" th:href="@{/(q=${q}, brand=${brand}, page=${page - 1})}">← Prev</a>
+            <span th:unless="${page > 0}" class="disabled">← Prev</span>
+            <span class="status">Page <span th:text="${page + 1}">1</span> of <span th:text="${totalPages}">1</span></span>
+            <a th:if="${page < totalPages - 1}" th:href="@{/(q=${q}, brand=${brand}, page=${page + 1})}">Next →</a>
+            <span th:unless="${page < totalPages - 1}" class="disabled">Next →</span>
+        </div>
+    </div>
+
+    <footer>
+        <div class="foot-wrap">
+            <div class="foot-brand">
+                <div class="brand"><span class="dot"></span>SpecScout</div>
+                <p>Your neutral, ad-free place to explore and compare smartphones. Real specs, clean data, no clutter.</p>
+            </div>
+            <div class="foot-col">
+                <h4>Explore</h4>
+                <a href="/">Browse phones</a>
+                <a href="/favorites">Favorites</a>
+            </div>
+            <div class="foot-col">
+                <h4>Company</h4>
+                <a href="#">How it works</a>
+                <a href="#">Data source</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+        <div class="foot-bottom">
+            <span>© 2026 SpecScout. All rights reserved.</span>
+            <span>Crafted with care</span>
+        </div>
+    </footer>
+<script>
+        // Load previously selected phones from sessionStorage (survives page changes)
+        let selected = JSON.parse(sessionStorage.getItem('compareSelected') || '[]');
+
+        function saveSelected(){
+            sessionStorage.setItem('compareSelected', JSON.stringify(selected));
+        }
+
+        function refreshBar(){
+            const bar = document.getElementById('compareBar');
+            const count = document.getElementById('compareCount');
+            count.textContent = selected.length + ' selected';
+            bar.style.display = selected.length > 0 ? 'flex' : 'none';
+        }
+
+        function toggleCompare(box){
+            const id = box.value;
+            if(box.checked){
+                if(selected.length >= 3){ box.checked=false; alert('You can compare up to 3 phones.'); return; }
+                if(!selected.includes(id)) selected.push(id);
+            } else {
+                selected = selected.filter(x => x !== id);
+            }
+            saveSelected();
+            refreshBar();
+        }
+
+        function goCompare(){
+            if(selected.length < 2){ alert('Pick at least 2 phones.'); return; }
+            window.location.href = '/compare?' + selected.map(id => 'ids=' + id).join('&');
+        }
+
+        function clearCompare(){
+            selected = [];
+            saveSelected();
+            document.querySelectorAll('.compare-check').forEach(c => c.checked=false);
+            refreshBar();
+        }
+
+        // When the page loads, re-tick any phones already selected, and show the bar
+        window.addEventListener('DOMContentLoaded', function(){
+            document.querySelectorAll('.compare-check').forEach(function(box){
+                if(selected.includes(box.value)) box.checked = true;
+            });
+            refreshBar();
+        });
+    </script>
+</body>
+</html>

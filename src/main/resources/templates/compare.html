@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare — SpecScout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{ --bg:#faf8f5; --card:#fff; --ink:#2b2622; --muted:#8a8178; --line:#ece7e0; --gold:#b78a3d; --soft:#f4efe8; }
+        *{box-sizing:border-box;}
+        body{font-family:'Inter',Arial,sans-serif; background:var(--bg); margin:0; color:var(--ink);}
+        a{text-decoration:none; color:inherit;}
+        .navbar{display:flex; align-items:center; gap:24px; background:rgba(255,255,255,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:16px 32px; position:sticky; top:0; z-index:20;}
+        .brand{font-family:'Playfair Display',serif; font-size:24px; font-weight:700; display:flex; align-items:center; gap:9px;}
+        .brand .dot{width:9px; height:9px; border-radius:50%; background:var(--gold);}
+        .nav-links{display:flex; gap:22px; font-size:14px;}
+        .nav-links a{color:var(--muted);} .nav-links a:hover{color:var(--ink);}
+        .wrap{max-width:1160px; margin:0 auto; padding:36px 32px;}
+        .back{display:inline-block; margin-bottom:18px; color:var(--muted); font-size:14px;}
+        .back:hover{color:var(--gold);}
+        h1{font-family:'Playfair Display',serif; font-size:34px; margin:0 0 8px;}
+        .sub{color:var(--muted); font-size:14px; margin:0 0 28px;}
+        .cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:24px;}
+        .ccard{position:relative; background:#fff; border:1px solid var(--line); border-radius:22px; padding:26px; box-shadow:0 10px 30px rgba(120,100,60,.06);}
+        .ccard.winner{border:2px solid var(--gold); box-shadow:0 16px 40px rgba(183,138,61,.18);}
+        .crown{position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:var(--gold); color:#fff; font-size:12px; font-weight:600; padding:6px 16px; border-radius:24px; white-space:nowrap; box-shadow:0 4px 12px rgba(183,138,61,.35);}
+        .cimg{height:190px; background:linear-gradient(160deg,#fbf9f6,#f4efe8); border:1px solid var(--line); border-radius:16px; display:flex; align-items:center; justify-content:center; margin-bottom:18px; font-size:44px;}
+        .cimg img{max-height:170px; max-width:88%;}
+        .cbrand{color:var(--gold); font-size:11px; font-weight:600; letter-spacing:.5px; text-transform:uppercase;}
+        .cname{font-size:20px; font-weight:600; margin:2px 0 18px;}
+        .srow{padding:12px 0; border-top:1px solid var(--line);}
+        .slabel{color:var(--muted); font-size:12px; margin-bottom:3px;}
+        .svalue{font-size:14px; font-weight:500; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+        .best-pill{background:#fdf3e0; color:var(--gold); font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px;}
+
+        /* Recommendation card (only when there's no clear winner) */
+        .rec{margin-top:36px; background:linear-gradient(160deg,#ffffff,#fbf7f0); border:1px solid var(--line); border-radius:24px; padding:34px; box-shadow:0 14px 40px rgba(120,100,60,.08);}
+        .rec h2{font-family:'Playfair Display',serif; font-size:24px; margin:0 0 6px;}
+        .rec .rec-sub{color:var(--muted); font-size:14px; margin:0 0 26px;}
+        .rec-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px;}
+        .rec-item{display:flex; gap:16px; align-items:flex-start; background:#fff; border:1px solid var(--line); border-radius:18px; padding:22px;}
+        .rec-icon{font-size:26px; line-height:1;}
+        .rec-item h3{margin:0 0 4px; font-size:15px; font-weight:600;}
+        .rec-item p{margin:0 0 12px; color:var(--muted); font-size:13px; line-height:1.6;}
+        .rec-pick{display:inline-flex; align-items:center; gap:8px; color:var(--ink); font-weight:600; font-size:14px;}
+        .rec-pick .dotname{color:var(--gold);}
+        .rec-note{margin-top:22px; color:var(--muted); font-size:13px; font-style:italic; text-align:center;}
+
+        .empty{color:var(--muted); background:#fff; border:1px dashed var(--line); border-radius:16px; padding:40px; text-align:center;}
+        .empty a{color:var(--gold);}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="brand"><span class="dot"></span>SpecScout</a>
+        <div class="nav-links">
+            <a href="/">Browse</a>
+            <a href="/favorites">Favorites</a>
+        </div>
+    </nav>
+    <div class="wrap">
+        <a class="back" href="/">← Back to all phones</a>
+        <h1>Compare phones</h1>
+        <p class="sub">Explore the specs side by side. We highlight each strength — the final choice is yours.</p>
+
+        <div class="empty" th:if="${phones.size() < 2}">
+            Pick at least 2 phones to compare. <a href="/">Go choose some →</a>
+        </div>
+
+        <div class="cards" th:if="${phones.size() >= 2}">
+            <div class="ccard" th:each="phone : ${phones}"
+                 th:classappend="${clearWinnerId != null and phone.id == clearWinnerId} ? 'winner' : ''">
+
+                <div class="crown" th:if="${clearWinnerId != null and phone.id == clearWinnerId}">🏆 Best Overall</div>
+
+                <div class="cimg">
+                    <img th:if="${phone.image != null and phone.image != ''}"
+                         th:src="'data:image/jpeg;base64,' + ${phone.image}"/>
+                    <span th:unless="${phone.image != null and phone.image != ''}">📱</span>
+                </div>
+                <div class="cbrand" th:text="${phone.brand}">Brand</div>
+                <div class="cname" th:text="${phone.name}">Phone name</div>
+
+                <div class="srow">
+                    <div class="slabel">RAM &amp; chip</div>
+                    <div class="svalue">
+                        <span th:text="${phone.ram}">RAM</span>
+                        <span class="best-pill" th:if="${bestRamIds.contains(phone.id)}">Most RAM</span>
+                    </div>
+                </div>
+
+                <div class="srow">
+                    <div class="slabel">Battery</div>
+                    <div class="svalue">
+                        <span th:text="${phone.battery}">Battery</span>
+                        <span class="best-pill" th:if="${bestBatteryIds.contains(phone.id)}">Biggest battery</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendation card: shown ONLY when there is no single clear winner -->
+        <div class="rec" th:if="${phones.size() >= 2 and clearWinnerId == null and (performancePick != null or batteryPick != null)}">
+            <h2>Which one is right for you?</h2>
+            <p class="rec-sub">These phones lead in different areas — so it comes down to what you value most.</p>
+
+            <div class="rec-grid">
+                <div class="rec-item" th:if="${performancePick != null}">
+                    <div class="rec-icon">⚡</div>
+                    <div>
+                        <h3>If performance matters most</h3>
+                        <p>More RAM generally means smoother multitasking and better handling of demanding apps and games.</p>
+                        <span class="rec-pick">Consider the <span class="dotname" th:text="${performancePick}">Phone</span></span>
+                    </div>
+                </div>
+
+                <div class="rec-item" th:if="${batteryPick != null}">
+                    <div class="rec-icon">🔋</div>
+                    <div>
+                        <h3>If battery life matters most</h3>
+                        <p>A larger battery typically lasts longer between charges — ideal for heavy days and travel.</p>
+                        <span class="rec-pick">Consider the <span class="dotname" th:text="${batteryPick}">Phone</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="rec-note">There's no single “best” here — only what's best for you.</p>
+        </div>
+    </div>
+</body>
+</html>

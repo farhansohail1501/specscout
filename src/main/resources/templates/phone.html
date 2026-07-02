@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${phone.name} + ' — SpecScout'">Phone — SpecScout</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{ --bg:#faf8f5; --card:#fff; --ink:#2b2622; --muted:#8a8178; --line:#ece7e0; --gold:#b78a3d; --soft:#f4efe8; }
+        *{box-sizing:border-box;}
+        body{font-family:'Inter',Arial,sans-serif; background:var(--bg); margin:0; color:var(--ink);}
+        a{text-decoration:none; color:inherit;}
+        .navbar{display:flex; align-items:center; gap:24px; background:rgba(255,255,255,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:16px 32px; position:sticky; top:0; z-index:20;}
+        .brand{font-family:'Playfair Display',serif; font-size:24px; font-weight:700; display:flex; align-items:center; gap:9px;}
+        .brand .dot{width:9px; height:9px; border-radius:50%; background:var(--gold);}
+        .nav-links{display:flex; gap:22px; font-size:14px;}
+        .nav-links a{color:var(--muted);} .nav-links a:hover{color:var(--ink);}
+        .wrap{max-width:1000px; margin:0 auto; padding:36px 32px;}
+        .back{display:inline-block; margin-bottom:24px; color:var(--muted); font-size:14px;}
+        .back:hover{color:var(--gold);}
+        .detail{display:flex; gap:48px; flex-wrap:wrap; background:var(--card); border:1px solid var(--line); border-radius:24px; padding:40px; box-shadow:0 10px 30px rgba(120,100,60,.06);}
+        .detail-img{flex:0 0 340px; background:linear-gradient(160deg,#fbf9f6,#f4efe8); border:1px solid var(--line); border-radius:20px; display:flex; align-items:center; justify-content:center; min-height:360px; font-size:80px;}
+        .detail-img img{max-width:88%; max-height:340px;}
+        .info{flex:1; min-width:280px;}
+        .brand-tag{color:var(--gold); font-size:13px; font-weight:600; letter-spacing:.6px; text-transform:uppercase;}
+        .info h1{font-family:'Playfair Display',serif; font-size:36px; margin:6px 0 24px;}
+        .spec-row{display:flex; padding:16px 0; border-bottom:1px solid var(--line);}
+        .spec-label{width:160px; color:var(--muted); font-size:14px;}
+        .spec-value{font-size:15px; font-weight:500;}
+        .no-specs{color:var(--muted); font-size:14px; padding:16px 0;}
+        .fav{margin-top:28px; display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; border-radius:12px; padding:11px 20px; cursor:pointer; font-size:14px; font-weight:500; font-family:inherit;}
+        .fav:hover{border-color:var(--gold);}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="brand"><span class="dot"></span>SpecScout</a>
+        <div class="nav-links">
+            <a href="/">Browse</a>
+            <a href="/favorites">Favorites</a>
+        </div>
+    </nav>
+    <div class="wrap">
+        <a class="back" href="/">← Back to all phones</a>
+        <div class="detail">
+            <div class="detail-img">
+                <img th:if="${phone.image != null and phone.image != ''}"
+                     th:src="'data:image/jpeg;base64,' + ${phone.image}"/>
+                <span th:unless="${phone.image != null and phone.image != ''}">📱</span>
+            </div>
+            <div class="info">
+                <div class="brand-tag" th:text="${phone.brand}">Brand</div>
+                <h1 th:text="${phone.name}">Phone name</h1>
+
+                <div class="spec-row" th:if="${phone.ram != null and phone.ram != ''}">
+                    <div class="spec-label">RAM &amp; chip</div>
+                    <div class="spec-value" th:text="${phone.ram}">RAM</div>
+                </div>
+                <div class="spec-row" th:if="${phone.battery != null and phone.battery != ''}">
+                    <div class="spec-label">Battery</div>
+                    <div class="spec-value" th:text="${phone.battery}">Battery</div>
+                </div>
+                <div class="spec-row" th:if="${phone.storage != null and phone.storage != ''}">
+                    <div class="spec-label">Storage</div>
+                    <div class="spec-value" th:text="${phone.storage}">Storage</div>
+                </div>
+                <div class="spec-row" th:if="${phone.screen != null and phone.screen != ''}">
+                    <div class="spec-label">Screen</div>
+                    <div class="spec-value" th:text="${phone.screen}">Screen</div>
+                </div>
+                <div class="spec-row" th:if="${phone.camera != null and phone.camera != ''}">
+                    <div class="spec-label">Camera</div>
+                    <div class="spec-value" th:text="${phone.camera}">Camera</div>
+                </div>
+                <div class="spec-row" th:if="${phone.releaseDate != null and phone.releaseDate != ''}">
+                    <div class="spec-label">Released</div>
+                    <div class="spec-value" th:text="${phone.releaseDate}">Release date</div>
+                </div>
+
+                <form th:action="@{/phone/{id}/favorite(id=${phone.id})}" method="post">
+                    <input type="hidden" name="returnTo" th:value="@{/phone/{id}(id=${phone.id})}"/>
+                    <button type="submit" class="fav">
+                        <span th:text="${phone.favorite} ? '♥' : '♡'"
+                              th:style="'font-size:18px; color:' + (${phone.favorite} ? '#b78a3d' : '#cfc9c0')">♡</span>
+                        <span th:text="${phone.favorite} ? 'Saved to favourites' : 'Add to favourites'">Add to favourites</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+spring.datasource.url=jdbc:h2:file:./data/specscout
+spring.jpa.hibernate.ddl-auto=update
+
+# Get a free API key at https://mobileapi.dev
+mobileapi.key=YOUR_API_KEY_HERE
