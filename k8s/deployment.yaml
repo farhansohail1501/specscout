@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: specscout-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: specscout
+  template:
+    metadata:
+      labels:
+        app: specscout
+    spec:
+      containers:
+        - name: specscout
+          image: specscoutacr1212.azurecr.io/specscout:1.0
+          ports:
+            - containerPort: 8080
