@@ -20,9 +20,11 @@ pipeline {
             }
         }
 
-        stage('Test') {
+      stage('Test') {
             steps {
-                sh './mvnw test'
+                withCredentials([string(credentialsId: 'mobileapi-key', variable: 'MOBILEAPI_KEY')]) {
+                    sh './mvnw test -Dmobileapi.key=$MOBILEAPI_KEY'
+                }
             }
         }
 
