@@ -47,5 +47,11 @@ pipeline {
                 sh 'docker build -t specscoutacr1212.azurecr.io/specscout:$BUILD_NUMBER .'
             }
         }
+
+        stage('Trivy Scan') {
+            steps {
+                sh 'trivy image --severity HIGH,CRITICAL --exit-code 0 specscoutacr1212.azurecr.io/specscout:$BUILD_NUMBER'
+            }
+        }
     }
 }
