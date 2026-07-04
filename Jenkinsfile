@@ -53,5 +53,14 @@ pipeline {
                 sh 'trivy image --severity HIGH,CRITICAL --exit-code 0 specscoutacr1212.azurecr.io/specscout:$BUILD_NUMBER'
             }
         }
+
+        stage('Push to ACR') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'acr-credentials', usernameVariable: 'ACR_USER', passwordVariable: 'ACR_PASS')]) {
+                    sh 'echo $ACR_PASS | docker login specscoutacr1212.azurecr.io -u $ACR_USER --password-stdin'
+                    sh 'docker push specscoutacr1212.azurecr.io/specscout:$BUILD_NUMBER'
+                }
+            }
+        }
     }
 }
