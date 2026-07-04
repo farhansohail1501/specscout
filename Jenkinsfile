@@ -28,6 +28,14 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh './mvnw sonar:sonar -Dsonar.projectKey=specscout'
+                }
+            }
+        }
+
         stage('Package') {
             steps {
                 sh './mvnw package -DskipTests'
