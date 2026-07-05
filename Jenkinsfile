@@ -78,5 +78,13 @@ pipeline {
                 sh 'kubectl rollout status deployment/specscout-deployment --timeout=180s'
             }
         }
+
+        stage('Monitor Deployment') {
+            steps {
+                sh 'kubectl rollout status deployment/specscout-deployment --timeout=180s'
+                sh 'kubectl get deployment specscout-deployment'
+                sh 'kubectl get pods -l app=specscout'
+                sh 'kubectl get service specscout-service'
+            }
     }
 }
