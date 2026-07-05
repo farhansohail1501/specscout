@@ -62,5 +62,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to AKS') {
+            steps {
+                sh 'kubectl apply -f k8s/'
+                sh 'kubectl set image deployment/specscout-deployment specscout=specscoutacr1212.azurecr.io/specscout:$BUILD_NUMBER'
+                sh 'kubectl rollout status deployment/specscout-deployment --timeout=180s'
+            }
+        }
     }
 }
