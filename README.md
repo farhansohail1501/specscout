@@ -15,7 +15,11 @@ SpecScout lets users browse, filter, favorite and compare smartphones side-by-si
 - **Features:** brand filter chips · pagination · favorites · phone detail pages · compare up to 3 phones with automatic "Best Overall" detection and smart recommendations when there's no clear winner
 - **Self-contained data:** 19 phones (specs + images) are baked into `src/main/resources/phones.tsv`, seeded on startup — the app runs identically on a laptop, in Docker, or in the cloud with **no runtime API dependency**
 
+![SpecScout live](docs/app-live.png)
+
 ## 🏗️ Architecture
+
+![Architecture](docs/architecture.png)
 
 ```
 Developer ──git push──▶ GitHub ──webhook──▶ Jenkins VM (Azure, Ubuntu 24.04)
@@ -40,6 +44,8 @@ All Azure infrastructure is defined as **ARM templates** in [`infra/`](infra/):
 | `jenkins-vm-template.json` | Ubuntu VM + static Standard public IP + NSG (22 / 8080 / 9000) + VNet + NIC |
 
 ## 🤖 The Pipeline (`Jenkinsfile` — 11 stages)
+
+![Pipeline — all stages green](docs/pipeline-green.png)
 
 | # | Stage | What it does |
 |---|---|---|
