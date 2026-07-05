@@ -98,8 +98,6 @@ docker run -p 8080:8080 specscout:local
 
 ---
 
-*Built as a hands-on, end-to-end DevOps project — every resource created as code, every release verified, scanned and monitored.*
-
 ## Author
 
 **Muhammad Farhan Sohail** — [LinkedIn](https://www.linkedin.com/in/muhammad-farhan-sohail-019a37220/)
