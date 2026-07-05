@@ -9,13 +9,19 @@ import org.springframework.web.client.RestClient;
 @Service
 public class PhoneApiService {
 
-    @Value("${mobileapi.key}")
+    @Value("${mobileapi.key:}")
     private String apiKey;
 
     private final RestClient restClient = RestClient.create();
 
     public List<Phone> search(String name) {
         List<Phone> phones = new ArrayList<>();
+
+        if (apiKey == null || apiKey.isBlank()) {
+            System.out.println("ℹ️ No mobileapi.key configured — skipping API search.");
+            return phones;
+        }
+
         try {
             DeviceSearchResponse response = restClient.get()
                 .uri("https://api.mobileapi.dev/devices/search?name={name}&key={key}", name, apiKey)
