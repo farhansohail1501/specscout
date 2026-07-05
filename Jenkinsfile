@@ -63,6 +63,14 @@ pipeline {
             }
         }
 
+        stage('Approval') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    input message: 'Deploy build #' + env.BUILD_NUMBER + ' to production (AKS)?', ok: 'Deploy 🚀'
+                }
+            }
+        }
+
         stage('Deploy to AKS') {
             steps {
                 sh 'kubectl apply -f k8s/'
